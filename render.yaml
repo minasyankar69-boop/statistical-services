@@ -1,0 +1,24 @@
+databases:
+  - name: stat-portal-db
+    plan: free
+    databaseName: statportal
+    user: statportal
+
+services:
+  - type: web
+    name: stat-portal
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: stat-portal-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: COOKIE_SECURE
+        value: "true"
